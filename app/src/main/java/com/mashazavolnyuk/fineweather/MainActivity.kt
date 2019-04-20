@@ -1,10 +1,12 @@
 package com.mashazavolnyuk.fineweather
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import io.reactivex.android.schedulers.AndroidSchedulers.*
+import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -14,10 +16,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val apiService = IRequest.create()
+            apiService.search("Donetsk","5ee0ae50f4a4baedc2a2dbf2407c918a")
+                .observeOn(mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe ({
+                        result ->
+                    Log.d("Result", "Wind speed ${result.wind.speed}")
+                }, { error ->
+                    error.printStackTrace()
+                })
         }
     }
 
